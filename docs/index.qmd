@@ -1,13 +1,12 @@
 ---
-title: "Tarea"
+title: "Tarea Nicho Ecologico / Belostoma elegans"
 author: "Maria Jose Bu Moreno / UNAH"
 format: html
 editor: visual
 ---
-jndjd
 
+jndjd
 
 ```{r}
 
 ```
-
