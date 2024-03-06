@@ -4,14 +4,13 @@ author: "Maria Jose Bu Moreno / UNAH"
 format: html
 editor: visual
 ---
+::: panel-tabset
 
 ```{r}
 
-::: panel-tabset
+## Segunda parte
 
-# Segunda parte
-
-install.packages(c("spocc","plyr","dplyr","spThin","sp"))#Correr para instalar paquetes
+install.packages(c("spocc","plyr","dplyr","spThin","sp"))
 
 library(spocc) 
 library(plyr)
@@ -19,6 +18,7 @@ library(dplyr)
 library(tidyr)
 library(spThin)
 
-:::
+
 
 ```
+:::
