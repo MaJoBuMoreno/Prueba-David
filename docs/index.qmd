@@ -7,11 +7,12 @@ editor: visual
 ::: panel-tabset
 
 ## Primera parte
+
 ## Segunda parte
 
 ```{r}
 
-install.packages(c("spocc","plyr","dplyr","spThin","sp"))
+(c("spocc","plyr","dplyr","spThin","sp"))
 
 library(spocc) 
 library(plyr)
@@ -22,7 +23,7 @@ library(spThin)
 ```
 
 ```{r}
-# Establecer direcotio de trabajo
+# Establecer directoio de trabajo
 
 setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
 
