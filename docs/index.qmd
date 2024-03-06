@@ -5,8 +5,20 @@ format: html
 editor: visual
 ---
 
-jndjd
-
 ```{r}
+
+::: panel-tabset
+
+# Segunda parte
+
+install.packages(c("spocc","plyr","dplyr","spThin","sp"))#Correr para instalar paquetes
+
+library(spocc) 
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(spThin)
+
+:::
 
 ```
