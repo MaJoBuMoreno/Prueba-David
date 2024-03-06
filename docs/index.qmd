@@ -1,14 +1,14 @@
 ---
-title: "Tarea Nicho Ecologico / Belostoma elegans"
+title: "Tarea Nicho Ecologico"
 author: "Maria Jose Bu Moreno / UNAH"
 format: html
 editor: visual
 ---
 ::: panel-tabset
 
-## Primera parte
+## B
 
-## Segunda parte
+## Belostoma elegans 
 
 ```{r}
 
