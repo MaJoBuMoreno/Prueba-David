@@ -6,9 +6,9 @@ editor: visual
 ---
 ::: panel-tabset
 
-```{r}
-
 ## Segunda parte
+
+```{r}
 
 install.packages(c("spocc","plyr","dplyr","spThin","sp"))
 
@@ -18,7 +18,29 @@ library(dplyr)
 library(tidyr)
 library(spThin)
 
+```
 
+```{r}
+# Establecer direcotio de trabajo
+
+setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
 
 ```
-:::
+
+```{r}
+#descargando la base de datos de Belostoma elegans
+
+spp <- (out <- occ(query = "Belostoma elegans*",from = c('gbif','vernet','ecoengine','idigbio','bison'),limit = 20000))
+
+spp2df <- occ2df(out)#to combine occurrences
+
+spp2df_ddply <- ddply(spp2df, c("longitude","latitude"), head, 1)#to delete occurrences without geographic coordinates and coordinates duplicated (same lon and lat for more than one occurrence).
+
+spp2df_ddply<- spp2df_ddply[spp2df_ddply$longitude!="NA"&spp2df_ddply$latitude!="NA",]
+spp2df_ddply<- spp2df_ddply[-80,]
+  
+write.csv(spp2df, "Oileus rimator_df.csv")#write the database with duplicates
+write.csv(spp2df_ddply,"Oileus_rimator_df_ddply.csv")#write database without duplicates
+
+```
+
