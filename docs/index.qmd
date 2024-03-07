@@ -6,7 +6,7 @@ editor: visual
 ---
 ::: panel-tabset
 
-## B
+## Primera parte
 
 ## Belostoma elegans 
 
@@ -32,18 +32,74 @@ setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
 ```{r}
 #descargando la base de datos de Belostoma elegans
 
-spp <- (out <- occ(query = "Belostoma elegans*",from = c('gbif','vernet','ecoengine','idigbio','bison'),limit = 20000))
+spp <- (out <- occ(query = "Belostoma elegans*",from = c('gbif','vernet','ecoengine','idigbio','bison'),limit = 10000))
 
-spp2be <- occ2df(out)#to combine occurrences
+spp2be <- occ2df(out)
 View(spp2be)
 
-spp2df_ddply <- ddply(spp2df, c("longitude","latitude"), head, 1)#to delete occurrences without geographic coordinates and coordinates duplicated (same lon and lat for more than one occurrence).
+# 149 observaciobes de 6 variables 
 
-spp2df_ddply<- spp2df_ddply[spp2df_ddply$longitude!="NA"&spp2df_ddply$latitude!="NA",]
-spp2df_ddply<- spp2df_ddply[-80,]
+spp2be_ddply <- ddply(spp2be, c("longitude","latitude"), head, 1)
+View(spp2be_ddply)
+
+# 10 observaciones de 6 variables
+
+spp2be_ddply<- spp2be_ddply[spp2be_ddply$longitude!="NA"&spp2be_ddply$latitude!="NA",]
+spp2be_ddply<- spp2be_ddply[-10,]
+View(spp2be_ddply)
+
+# ahora 9 observaciones ya que la 10 observacion tenia algunos vacios
   
-write.csv(spp2df, "Oileus rimator_df.csv")#write the database with duplicates
-write.csv(spp2df_ddply,"Oileus_rimator_df_ddply.csv")#write database without duplicates
+write.csv(spp2be, "Belostoma_elegans_be.csv")
+
+write.csv(spp2be_ddply,"Belostoma_elegans_be_ddply.csv")
+```
+
+
+```{r}
+##autocorrelacion
+
+data_thin<-spThin::thin(spp2be_ddply, lat.col="latitude",long.col="longitude",thin.par=1,spec.col = "name",locs.thinned.list.return = TRUE,max.files = 1,write.files = FALSE,reps=1)
+
+#9 observaciones de 6 variables
+
+data_thin1
+
+data_thin1<-data_thin[[1]]#To unlist de thinned database
+
+write.csv(data_thin1,"Belostoma_elegans.csv")#To write the thinned database
+  
+###Convertir dataframe (data_thin1) en shapefile
+
+library(terra)
+library(sp)
+  
+America<-terra::vect("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Americas/Americas.shp")
+CRS<-sp::CRS("+proj=longlat +datum=WGS84 +no_defs")
+
+#To define a coordinate reference system, this is the most widely used.
+
+names(data_thin1)#To know column names
+  
+pts1 <- terra::vect(sp::SpatialPointsDataFrame(coords = cbind(data_thin1$Longitude,data_thin1$Latitude),data_thin1,proj4string = CRS))#To convert database into a shapefile
+  
+summary(pts1)#To know lower and upper limits in longitude and latitude
+  
+plot(America,xlim=c(-110,-90),ylim=c(15,25))
+#To plot America shape using the coordinate limits
+plot(pts1,add=T,pch=16)#To add thinned occurrences to America plot
+  
+setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
+  
+dir.create("Shape_Belostoma_elegans")
+#To create a new folder per species
+  
+setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Belostoma_elegans")
+  
+terra::writeVector(pts1,"Belostoma_elegans.shp",overwrite=T)
+
+#To write the shapefile which contains thinned occurrences.
+
 
 ```
 
