@@ -8,11 +8,9 @@ editor: visual
 
 ## Primera parte
 
-## Arga pulla
+## Argia pulla
 
 ```{r}
-
-(c("spocc","plyr","dplyr","spThin","sp"))
 
 library(spocc) 
 library(plyr)
@@ -22,12 +20,6 @@ library(spThin)
 
 ```
 
-```{r}
-# Establecer directoio de trabajo
-
-setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
-
-```
 
 ```{r}
 #descargando la base de datos de Belostoma elegans
@@ -36,18 +28,15 @@ spp <- (out <- occ(query = "Argia pulla*",from = c('gbif','vernet','ecoengine','
 
 
 spp2ap <-occ2df(out)
-View(spp2ap)
 
 # 2494 observaciobes de 6 variables 
 
 spp2ap_ddply <- ddply(spp2ap, c("longitude","latitude"), head, 1)
-View(spp2ap_ddply)
 
 # 867 observaciones de 6 variables
 
 spp2ap_ddply<- spp2ap_ddply[spp2ap_ddply$longitude!="NA"&spp2ap_ddply$latitude!="NA",]
 spp2ap_ddply<- spp2ap_ddply[-867,]
-View(spp2ap_ddply)
 
 # ahora 866 observaciones ya que la 867 observacion tenia algunos vacios
   
@@ -68,11 +57,12 @@ data_thin<-spThin::thin(spp2ap_ddply, lat.col="latitude",long.col="longitude",th
 # "Number of data.frames with max records: 1"
 # "No files written for this run.
 
-data_thin1
 
-data_thin1<-data_thin[[1]]#To unlist de thinned database
+data_thin1<-data_thin[[1]]
+#To unlist de thinned database
 
-write.csv(data_thin1,"Argia_pulla_thin.csv")#To write the thinned database
+write.csv(data_thin1,"Argia_pulla_thin.csv")
+#To write the thinned database
   
 ###Convertir dataframe (data_thin1) en shapefile
 
@@ -92,22 +82,13 @@ pts1 <- terra::vect(sp::SpatialPointsDataFrame(coords = cbind(data_thin1$Longitu
 summary(pts1)#To know lower and upper limits in longitude and latitude
 
 terra::ext(pts1)  
+plot(America)
 
 plot(America,xlim=c(-100,-60),ylim=c(-5,35))
-
-#To plot America shape using the coordinate limits
-
 plot(pts1,add=T,pch=16)
-#To add thinned occurrences to America plot
+
   
-setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
-  
-dir.create("Shape_Argia_pulla")
-#To create a new folder per species
-  
-setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla")
-  
-terra::writeVector(pts1,"Argia_pulla.shp",overwrite=T)
+terra::writeVector(pts1,"C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla/Argia_pulla.shp",overwrite=T)
 
 #To write the shapefile which contains thinned occurrences.
 
@@ -122,19 +103,18 @@ terra::writeVector(pts1,"Argia_pulla.shp",overwrite=T)
 
 spp_shp<-terra::vect("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla/Argia_pulla.shp")#Shapefile modified in GIS software
 
-plot(America,xlim=c(-110,-90),ylim=c(15,25))
+plot(America,xlim=c(-100,-60),ylim=c(-5,35))
 plot(spp_shp,add=T,pch=16)
 
 data_fin<-data.frame(longitude=spp_shp$Longitude,latitude=spp_shp$Latitude)
 #To convert modified shapefile into a dataframe
 
-setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
 
 write.csv(data_fin,"Argia_Pulla_final.csv")
 
-setwd("C:/sppapUsers/majo_/Curso ECOSUR/Prueba-David/docs/WorldClim_America")
+#setwd("C:/sppapUsers/majo_/Curso ECOSUR/Prueba-David/docs/WorldClim_America")
 
-WorldClim<- list.files(".",pattern = "*.tif$",full.names = T)
+WorldClim<- list.files("WorldClim_America/WorldClim_America/.",pattern = "*.tif$",full.names = T)
 #To make a list of files with extension ".tif"
 
 WorldClim1<- terra::rast(WorldClim)
@@ -167,9 +147,9 @@ usdm::vifstep(na.omit(data_variable[,-1], th=10))
 
 library(terra)
 
-spp_shp<-terra::vect("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Shape_Oileus_rimator/Oileus_rimator.shp")#Shapefile modified in GIS software
+spp_shp<-terra::vect("Shape_Argia_pulla/Argia_pulla.shp")#Shapefile modified in GIS software
 
-Prov_Biogeo <-  terra::vect("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Provincias_biogeográficas_2022/NeotropicMap_Geo.shp")
+  Prov_Biogeo <-  terra::vect("Provincias_biogeográficas_2022/Provincias_biogeográficas_2022/NeotropicMap_Geo.shp")
 
 Poligonos_ProvBiogeo <- sp::over(as(Prov_Biogeo,"Spatial"), as(spp_shp,"Spatial") , fn = NULL)
 en_poligono_bioprovincias <- which(!is.na(Poligonos_ProvBiogeo))
@@ -180,34 +160,34 @@ Final_M <- terra::aggregate(M_ProvBiogeo)
 plot(Final_M)
 plot(spp_shp, col="red", add= TRUE, pch=20, cex= 0.9)
 
-setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/")
-dir.create("M_Oileus_rimator")#Crea una carpeta donde vas a guardar las áreas accesibles de cada especie (M)
+#setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/")
+#dir.create("M_Oileus_rimator")#Crea una carpeta donde vas a guardar las áreas accesibles de cada especie (M)
 
-setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/M_Oileus_rimator/")
+#setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/M_Oileus_rimator/")
 
-writeVector(Final_M,"M_Oileus_rimator.shp",overwrite=T)
+writeVector(Final_M,"Shape_Argia_pulla/M_Argia_pulla/M_Argia_pulla.shp",overwrite=T)
 
 ####################################################################
 ############Cortar capas con la M ############
 ####################################################################
 
-M_final <-terra::vect("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/M_Oileus_rimator/M_Oileus_rimator.shp")
+M_final <-terra::vect("Shape_Argia_pulla/M_Argia_pulla/M_Argia_pulla.shp")
 
-setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Variables")
-var_selec <- list.files(".",pattern = "*.tif$",full.names = T)
-capas_selec<- terra::rast(var_selec)#compilar variables seleccionadas
+#setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Variables")
+#var_selec <- list.files(".",pattern = "*.tif$",full.names = T)
+#capas_selec<- terra::rast(var_selec)#compilar variables seleccionadas
 
-setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE")
-dir.create("Oileus_rimator_capas_fin")#crear una carpeta
+#setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE")
+#dir.create("Oileus_rimator_capas_fin")#crear una carpeta
 
-Cortar_M <- mask(crop(capas_selec, M_final),M_final)
-plot(Cortar_M)
+#Cortar_M <- mask(crop(capas_selec, M_final),M_final)
+#plot(Cortar_M)
 
-lapply(names(Cortar_M), function(x){
-  writeRaster(Cortar_M[[x]], paste0("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Oileus_rimator_capas_fin/",x,".asc"),overwrite=TRUE)})#Guardar capas recortadas
+#lapply(names(Cortar_M), function(x){
+#  writeRaster(Cortar_M[[x]], paste0("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Oileus_rimator_capas_fin/",x,".asc"),overwrite=TRUE)})#Guardar capas recortadas
 
-library(ntbox)
-run_ntbox()
+#library(ntbox)
+#run_ntbox()
 
 ```
 :::
