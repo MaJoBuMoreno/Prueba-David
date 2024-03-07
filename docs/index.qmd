@@ -8,7 +8,7 @@ editor: visual
 
 ## Primera parte
 
-## Belostoma elegans 
+## Arga pulla
 
 ```{r}
 
@@ -32,42 +32,47 @@ setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
 ```{r}
 #descargando la base de datos de Belostoma elegans
 
-spp <- (out <- occ(query = "Belostoma elegans*",from = c('gbif','vernet','ecoengine','idigbio','bison'),limit = 10000))
+spp <- (out <- occ(query = "Argia pulla*",from = c('gbif','vernet','ecoengine','idigbio','bison'),limit = 20000))
 
-spp2be <- occ2df(out)
-View(spp2be)
 
-# 149 observaciobes de 6 variables 
+spp2ap <-occ2df(out)
+View(spp2ap)
 
-spp2be_ddply <- ddply(spp2be, c("longitude","latitude"), head, 1)
-View(spp2be_ddply)
+# 2494 observaciobes de 6 variables 
 
-# 10 observaciones de 6 variables
+spp2ap_ddply <- ddply(spp2ap, c("longitude","latitude"), head, 1)
+View(spp2ap_ddply)
 
-spp2be_ddply<- spp2be_ddply[spp2be_ddply$longitude!="NA"&spp2be_ddply$latitude!="NA",]
-spp2be_ddply<- spp2be_ddply[-10,]
-View(spp2be_ddply)
+# 867 observaciones de 6 variables
 
-# ahora 9 observaciones ya que la 10 observacion tenia algunos vacios
+spp2ap_ddply<- spp2ap_ddply[spp2ap_ddply$longitude!="NA"&spp2ap_ddply$latitude!="NA",]
+spp2ap_ddply<- spp2ap_ddply[-867,]
+View(spp2ap_ddply)
+
+# ahora 866 observaciones ya que la 867 observacion tenia algunos vacios
   
-write.csv(spp2be, "Belostoma_elegans_be.csv")
+write.csv(spp2ap, "Argia_pulla_ap.csv")
 
-write.csv(spp2be_ddply,"Belostoma_elegans_be_ddply.csv")
+write.csv(spp2ap_ddply,"Argia_pulla_ap_ddply.csv")
+
+
 ```
 
 
 ```{r}
 ##autocorrelacion
 
-data_thin<-spThin::thin(spp2be_ddply, lat.col="latitude",long.col="longitude",thin.par=1,spec.col = "name",locs.thinned.list.return = TRUE,max.files = 1,write.files = FALSE,reps=1)
+data_thin<-spThin::thin(spp2ap_ddply, lat.col="latitude",long.col="longitude",thin.par=1,spec.col = "name",locs.thinned.list.return = TRUE,max.files = 1,write.files = FALSE,reps=1)
 
-#9 observaciones de 6 variables
+# "Maximum number of records after thinning: 568"
+# "Number of data.frames with max records: 1"
+# "No files written for this run.
 
 data_thin1
 
 data_thin1<-data_thin[[1]]#To unlist de thinned database
 
-write.csv(data_thin1,"Belostoma_elegans.csv")#To write the thinned database
+write.csv(data_thin1,"Argia_pulla_thin.csv")#To write the thinned database
   
 ###Convertir dataframe (data_thin1) en shapefile
 
@@ -81,25 +86,128 @@ CRS<-sp::CRS("+proj=longlat +datum=WGS84 +no_defs")
 
 names(data_thin1)#To know column names
   
-pts1 <- terra::vect(sp::SpatialPointsDataFrame(coords = cbind(data_thin1$Longitude,data_thin1$Latitude),data_thin1,proj4string = CRS))#To convert database into a shapefile
+pts1 <- terra::vect(sp::SpatialPointsDataFrame(coords = cbind(data_thin1$Longitude,data_thin1$Latitude),data_thin1,proj4string = CRS))
+#To convert database into a shapefile
   
 summary(pts1)#To know lower and upper limits in longitude and latitude
-  
-plot(America,xlim=c(-110,-90),ylim=c(15,25))
+
+terra::ext(pts1)  
+
+plot(America,xlim=c(-100,-60),ylim=c(-5,35))
+
 #To plot America shape using the coordinate limits
-plot(pts1,add=T,pch=16)#To add thinned occurrences to America plot
+
+plot(pts1,add=T,pch=16)
+#To add thinned occurrences to America plot
   
 setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
   
-dir.create("Shape_Belostoma_elegans")
+dir.create("Shape_Argia_pulla")
 #To create a new folder per species
   
-setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Belostoma_elegans")
+setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla")
   
-terra::writeVector(pts1,"Belostoma_elegans.shp",overwrite=T)
+terra::writeVector(pts1,"Argia_pulla.shp",overwrite=T)
 
 #To write the shapefile which contains thinned occurrences.
 
 
 ```
 
+
+```{r}
+#####################################################
+########Selection of variables########
+#####################################################
+
+spp_shp<-terra::vect("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla/Argia_pulla.shp")#Shapefile modified in GIS software
+
+plot(America,xlim=c(-110,-90),ylim=c(15,25))
+plot(spp_shp,add=T,pch=16)
+
+data_fin<-data.frame(longitude=spp_shp$Longitude,latitude=spp_shp$Latitude)
+#To convert modified shapefile into a dataframe
+
+setwd("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs")
+
+write.csv(data_fin,"Argia_Pulla_final.csv")
+
+setwd("C:/sppapUsers/majo_/Curso ECOSUR/Prueba-David/docs/WorldClim_America")
+
+WorldClim<- list.files(".",pattern = "*.tif$",full.names = T)
+#To make a list of files with extension ".tif"
+
+WorldClim1<- terra::rast(WorldClim)
+#To combine files in a single file
+
+data_variable<-terra::extract(WorldClim1,spp_shp)
+#To extract bioclimatic values of WorldClim variables for each occurrence.
+
+##Methods to avoid autocolineaty of variables
+
+###Correlacion de Pearson: univariada (+-0.7)
+
+cor_WorldCLim<-cor(na.omit(data_variable[,-1]))
+#Pearson correlation, "[,-1]" is to exclude the first column from the analysis
+
+cor_test<-corrplot::cor.mtest(na.omit(data_variable[,-1]), conf.level = 0.95)
+#To calculate significance of correlations
+
+corrplot::corrplot(cor_WorldCLim,method=c("number"),p.mat = cor_test$p, type = 'lower',diag=FALSE,insig="blank",addCoef.col ='black', number.cex = 0.8, order = 'AOE')
+#To plot Pearson correlations
+
+##3.VIF (variance inflaction factor): multivariate option (1-infinte, 1.5-10)
+
+usdm::vif(na.omit(data_variable[,-1]))
+usdm::vifstep(na.omit(data_variable[,-1], th=10))
+
+###########################################################################
+########Area accesible########
+###########################################################################
+
+library(terra)
+
+spp_shp<-terra::vect("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Shape_Oileus_rimator/Oileus_rimator.shp")#Shapefile modified in GIS software
+
+Prov_Biogeo <-  terra::vect("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Provincias_biogeográficas_2022/NeotropicMap_Geo.shp")
+
+Poligonos_ProvBiogeo <- sp::over(as(Prov_Biogeo,"Spatial"), as(spp_shp,"Spatial") , fn = NULL)
+en_poligono_bioprovincias <- which(!is.na(Poligonos_ProvBiogeo))
+M_ProvBiogeo <- Prov_Biogeo[en_poligono_bioprovincias ,]
+plot(M_ProvBiogeo)
+
+Final_M <- terra::aggregate(M_ProvBiogeo)
+plot(Final_M)
+plot(spp_shp, col="red", add= TRUE, pch=20, cex= 0.9)
+
+setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/")
+dir.create("M_Oileus_rimator")#Crea una carpeta donde vas a guardar las áreas accesibles de cada especie (M)
+
+setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/M_Oileus_rimator/")
+
+writeVector(Final_M,"M_Oileus_rimator.shp",overwrite=T)
+
+####################################################################
+############Cortar capas con la M ############
+####################################################################
+
+M_final <-terra::vect("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/M_Oileus_rimator/M_Oileus_rimator.shp")
+
+setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Variables")
+var_selec <- list.files(".",pattern = "*.tif$",full.names = T)
+capas_selec<- terra::rast(var_selec)#compilar variables seleccionadas
+
+setwd("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE")
+dir.create("Oileus_rimator_capas_fin")#crear una carpeta
+
+Cortar_M <- mask(crop(capas_selec, M_final),M_final)
+plot(Cortar_M)
+
+lapply(names(Cortar_M), function(x){
+  writeRaster(Cortar_M[[x]], paste0("C:/Users/e_r_a/OneDrive/Documents/Edwin/Cursos_impartidos/Ecosur_2024/Modulo_MNE/Oileus_rimator_capas_fin/",x,".asc"),overwrite=TRUE)})#Guardar capas recortadas
+
+library(ntbox)
+run_ntbox()
+
+```
+:::
