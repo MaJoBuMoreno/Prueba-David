@@ -59,11 +59,9 @@ data_thin<-spThin::thin(spp2ap_ddply, lat.col="latitude",long.col="longitude",th
 
 
 data_thin1<-data_thin[[1]]
-#To unlist de thinned database
 
 write.csv(data_thin1,"Argia_pulla_thin.csv")
-#To write the thinned database
-  
+
 ###Convertir dataframe (data_thin1) en shapefile
 
 library(terra)
@@ -72,14 +70,11 @@ library(sp)
 America<-terra::vect("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Americas/Americas.shp")
 CRS<-sp::CRS("+proj=longlat +datum=WGS84 +no_defs")
 
-#To define a coordinate reference system, this is the most widely used.
-
 names(data_thin1)#To know column names
   
 pts1 <- terra::vect(sp::SpatialPointsDataFrame(coords = cbind(data_thin1$Longitude,data_thin1$Latitude),data_thin1,proj4string = CRS))
-#To convert database into a shapefile
-  
-summary(pts1)#To know lower and upper limits in longitude and latitude
+
+summary(pts1)
 
 terra::ext(pts1)  
 plot(America)
@@ -90,42 +85,30 @@ plot(pts1,add=T,pch=16)
   
 terra::writeVector(pts1,"C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla/Argia_pulla.shp",overwrite=T)
 
-#To write the shapefile which contains thinned occurrences.
-
-
 ```
 
 
 ```{r}
-#####################################################
-########Selection of variables########
-#####################################################
 
-spp_shp<-terra::vect("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla/Argia_pulla.shp")#Shapefile modified in GIS software
+spp_shp<-terra::vect("C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla/Argia_pulla.shp")
 
 plot(America,xlim=c(-100,-60),ylim=c(-5,35))
 plot(spp_shp,add=T,pch=16)
 
 data_fin<-data.frame(longitude=spp_shp$Longitude,latitude=spp_shp$Latitude)
-#To convert modified shapefile into a dataframe
-
 
 write.csv(data_fin,"Argia_Pulla_final.csv")
 
 #setwd("C:/sppapUsers/majo_/Curso ECOSUR/Prueba-David/docs/WorldClim_America")
 
 WorldClim<- list.files("WorldClim_America/WorldClim_America/.",pattern = "*.tif$",full.names = T)
-#To make a list of files with extension ".tif"
 
 WorldClim1<- terra::rast(WorldClim)
-#To combine files in a single file
 
 data_variable<-terra::extract(WorldClim1,spp_shp)
-#To extract bioclimatic values of WorldClim variables for each occurrence.
 
-##Methods to avoid autocolineaty of variables
 
-###Correlacion de Pearson: univariada (+-0.7)
+# Correlacion de Pearson: univariada (+-0.7)
 
 cor_WorldCLim<-cor(na.omit(data_variable[,-1]))
 #Pearson correlation, "[,-1]" is to exclude the first column from the analysis
