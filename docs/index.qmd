@@ -4,8 +4,8 @@ author: "Maria Jose Bu Moreno / UNAH"
 format: html
 editor: visual
 ---
-::: panel-tabset
 
+::: panel-tabset
 ## Primera parte
 
 ## Argia pulla
@@ -19,7 +19,6 @@ library(tidyr)
 library(spThin)
 
 ```
-
 
 ```{r}
 #descargando la base de datos de Belostoma elegans
@@ -46,7 +45,6 @@ write.csv(spp2ap_ddply,"Argia_pulla_ap_ddply.csv")
 
 
 ```
-
 
 ```{r}
 ##autocorrelacion
@@ -86,7 +84,6 @@ plot(pts1,add=T,pch=16)
 terra::writeVector(pts1,"C:/Users/majo_/Curso ECOSUR/Prueba-David/docs/Shape_Argia_pulla/Argia_pulla.shp",overwrite=T)
 
 ```
-
 
 ```{r}
 
