@@ -313,3 +313,41 @@ loc.cnt df.freq
 Maximum number of records after thinning: 568
 Number of data.frames with max records: 1
 No files written for this run.
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Tue Mar 26 10:02:52 2024
+There appear to be more than one species name in this *.csv file.
+Only using species name: Argia pulla Hagen, 1865
+
+Thinning Parameter Used (in km): 1
+Number of replicates of thinning script: 1
+
+Elapsed time for thinning completion
+0.06 0 0.16 NA NA
+
+Number of data.frames per locations retained
+loc.cnt df.freq
+570
+1
+Maximum number of records after thinning: 570
+Number of data.frames with max records: 1
+No files written for this run.
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Tue Mar 26 10:04:33 2024
+There appear to be more than one species name in this *.csv file.
+Only using species name: Argia pulla Hagen, 1865
+
+Thinning Parameter Used (in km): 1
+Number of replicates of thinning script: 1
+
+Elapsed time for thinning completion
+0.03 0 0.15 NA NA
+
+Number of data.frames per locations retained
+loc.cnt df.freq
+569
+1
+Maximum number of records after thinning: 569
+Number of data.frames with max records: 1
+No files written for this run.

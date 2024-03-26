@@ -6,7 +6,6 @@ editor: visual
 ---
 
 ::: panel-tabset
-## Primera parte
 
 ## Argia pulla
 
